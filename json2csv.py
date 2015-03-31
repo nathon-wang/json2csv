@@ -21,11 +21,11 @@ def to_readable(s):
     else:
         return s
 
-def json2datas(jdatas, headers):
+def json_dumps(jdatas, headers):
     for data in jdatas:
         yield [data.get(header, '') for header in headers]
 
-def datas2json(ldatas, headers):
+def csv_dumps(ldatas, headers):
     for data in ldatas:
         yield {header:data[idx] for idx, header in enumerate(headers) if header != ''}
 
@@ -41,7 +41,7 @@ def jsonFile2csvFile(jsonFile, csvFile, headers=None, bom=False):
     if not headers:
         headers = jsonData[0].keys()
 
-    csv_data = list(map(lambda x:list(map(to_readable, x)), json2datas(jsonData, headers)))
+    csv_data = list(map(lambda x:list(map(to_readable, x)), json_dumps(jsonData, headers)))
     if bom:
         with open(csvFile, 'wb') as f:
             f.write(codecs.BOM_UTF8)
@@ -54,7 +54,7 @@ def jsonFile2csvFile(jsonFile, csvFile, headers=None, bom=False):
 
 def csvFile2jsonFile(csvFile, jsonFile, headers=None, indent=None):
     cData = csv.reader(open(csvFile, 'r'))
-    jsonData = list(datas2json(cData, headers))
+    jsonData = list(csv_dumps(cData, headers))
     with open(jsonFile, 'w') as f:
         f.write(json.dumps(jsonData, indent=indent))
 
